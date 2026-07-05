@@ -1,18 +1,19 @@
 import os
 
 try:
-    from openai import OpenAI
+    from groq import Groq
 except ImportError:
-    OpenAI = None
+    Groq = None
 
-USE_LIVE_LLM = True  # 🔥 ENABLE LLM
+USE_LIVE_LLM = True  # enable LLM responses when Groq is available
+DEFAULT_GROQ_MODEL = os.getenv("GROQ_MODEL", "llama-3.1-8b-instant")
 
 
 def build_client():
-    api_key = os.getenv("OPENAI_API_KEY")
-    if not api_key or OpenAI is None:
+    api_key = os.getenv("GROQ_API_KEY")
+    if not api_key or Groq is None:
         return None
-    return OpenAI(api_key=api_key)
+    return Groq(api_key=api_key)
 
 
 # ------------------------------
@@ -49,9 +50,9 @@ def fallback_chatbot(user_message, prediction, confidence, risk_level):
 
 
 # ------------------------------
-# LLM-POWERED CHATBOT
+# GROQ-POWERED CHATBOT
 # ------------------------------
-def llm_chatbot(user_message, prediction, confidence, risk_level):
+def groq_chatbot(user_message, prediction, confidence, risk_level):
     client = build_client()
     if client is None:
         return fallback_chatbot(user_message, prediction, confidence, risk_level)
@@ -75,9 +76,9 @@ Guidelines:
 """
 
     response = client.chat.completions.create(
-        model="gpt-4o-mini",
+        model=DEFAULT_GROQ_MODEL,
         messages=[{"role": "user", "content": prompt}],
-        temperature=0.3
+        temperature=0.3,
     )
 
     return response.choices[0].message.content.strip()
@@ -90,19 +91,20 @@ def chatbot_reply(user_message, prediction, confidence, risk_level):
     msg = user_message.lower()
 
     conversational = any(
-        k in msg for k in [
-            "why", "how", "what happens", "impact", "consequence"
+        k in msg
+        for k in [
+            "why",
+            "how",
+            "what happens",
+            "impact",
+            "consequence",
         ]
     )
 
     if USE_LIVE_LLM and conversational:
         try:
-            return llm_chatbot(
-                user_message, prediction, confidence, risk_level
-            )
+            return groq_chatbot(user_message, prediction, confidence, risk_level)
         except Exception:
             pass  # fall through safely
 
-    return fallback_chatbot(
-        user_message, prediction, confidence, risk_level
-    )
+    return fallback_chatbot(user_message, prediction, confidence, risk_level)

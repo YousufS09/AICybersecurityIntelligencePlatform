@@ -53,6 +53,13 @@ If you deploy the model somewhere else, set:
 MODEL_SOURCE
 ```
 
+If you want the assistant responses to use Groq, set:
+
+```bash
+GROQ_API_KEY
+GROQ_MODEL
+```
+
 If your frontend is deployed on Netlify, set:
 
 ```bash
@@ -132,6 +139,7 @@ Example request:
 - The backend is configured for local development with CORS allowed from `http://localhost:3000` and `http://127.0.0.1:3000`.
 - The model files are expected in `backend/model/phishing_bert/` unless `MODEL_SOURCE` points somewhere else.
 - The model artifact is large, so it is usually better to keep it outside the Git repo and point `MODEL_SOURCE` at a hub or storage location.
+- Groq powers the assistant-style chat responses when `GROQ_API_KEY` is set.
 - If the backend cannot find the model or a dependency is missing, check the Python environment and installed packages first.
 
 ## Deployment settings
@@ -149,4 +157,6 @@ Example request:
 - Build command: `pip install -r backend/requirements.txt`
 - Start command: `uvicorn backend.main:app --host 0.0.0.0 --port $PORT`
 - Environment variable: `CORS_ORIGINS=https://your-site.netlify.app`
+- Environment variable: `GROQ_API_KEY=your_groq_key`
+- Optional environment variable: `GROQ_MODEL=llama-3.1-8b-instant`
 - Optional environment variable: `MODEL_SOURCE=<local-path-or-hub-id>`

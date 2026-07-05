@@ -1,7 +1,11 @@
 import os
+from pathlib import Path
 
+from dotenv import load_dotenv
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
+
+load_dotenv(Path(__file__).resolve().parents[2] / ".env")
 
 from backend.app.schemas import AnalyzeRequest, AnalyzeResponse, ChatRequest, ChatResponse
 from backend.src.inference import run_inference
