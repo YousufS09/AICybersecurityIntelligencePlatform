@@ -6,7 +6,8 @@ import torch.nn.functional as F
 from transformers import BertForSequenceClassification, BertTokenizerFast
 
 PROJECT_ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
-MODEL_DIR = os.path.join(PROJECT_ROOT, "model", "phishing_bert")
+DEFAULT_MODEL_DIR = os.path.join(PROJECT_ROOT, "model", "phishing_bert")
+MODEL_SOURCE = os.getenv("MODEL_SOURCE", DEFAULT_MODEL_DIR)
 
 
 def resolve_device() -> torch.device:
@@ -18,8 +19,8 @@ def resolve_device() -> torch.device:
 
 DEVICE = resolve_device()
 
-tokenizer = BertTokenizerFast.from_pretrained(MODEL_DIR)
-model = BertForSequenceClassification.from_pretrained(MODEL_DIR)
+tokenizer = BertTokenizerFast.from_pretrained(MODEL_SOURCE)
+model = BertForSequenceClassification.from_pretrained(MODEL_SOURCE)
 
 try:
     model.to(DEVICE)

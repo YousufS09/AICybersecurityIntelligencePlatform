@@ -27,12 +27,12 @@ AI Cybersecurity Intelligence Platform is a full-stack security assistant that a
 
 ## Backend setup
 
-The backend uses FastAPI and loads the saved phishing BERT model from `backend/model/phishing_bert/`.
+The backend uses FastAPI and loads the saved phishing BERT model from `backend/model/phishing_bert/` by default.
 
 Install the Python dependencies you need for the backend:
 
 ```bash
-pip install fastapi uvicorn torch transformers pydantic
+pip install -r backend/requirements.txt
 ```
 
 Run the backend from the project root:
@@ -45,6 +45,24 @@ The API will be available at:
 
 ```bash
 http://127.0.0.1:8000
+```
+
+If you deploy the model somewhere else, set:
+
+```bash
+MODEL_SOURCE
+```
+
+If your frontend is deployed on Netlify, set:
+
+```bash
+CORS_ORIGINS
+```
+
+Use a comma-separated list of allowed origins, for example:
+
+```bash
+CORS_ORIGINS=https://your-site.netlify.app
 ```
 
 ## Frontend setup
@@ -73,6 +91,8 @@ If your backend runs somewhere else, set:
 ```bash
 REACT_APP_API_BASE_URL
 ```
+
+For a Netlify deployment, set this to your Render backend URL at build time.
 
 ## API endpoints
 
@@ -110,6 +130,23 @@ Example request:
 ## Notes
 
 - The backend is configured for local development with CORS allowed from `http://localhost:3000` and `http://127.0.0.1:3000`.
-- The model files are already stored in the repository under `backend/model/phishing_bert/`.
+- The model files are expected in `backend/model/phishing_bert/` unless `MODEL_SOURCE` points somewhere else.
+- The model artifact is large, so it is usually better to keep it outside the Git repo and point `MODEL_SOURCE` at a hub or storage location.
 - If the backend cannot find the model or a dependency is missing, check the Python environment and installed packages first.
 
+## Deployment settings
+
+### Netlify
+
+- Base directory: `frontend`
+- Build command: `npm run build`
+- Publish directory: `build`
+- Environment variable: `REACT_APP_API_BASE_URL=https://your-render-backend.onrender.com`
+
+### Render
+
+- Root directory: repository root
+- Build command: `pip install -r backend/requirements.txt`
+- Start command: `uvicorn backend.main:app --host 0.0.0.0 --port $PORT`
+- Environment variable: `CORS_ORIGINS=https://your-site.netlify.app`
+- Optional environment variable: `MODEL_SOURCE=<local-path-or-hub-id>`
