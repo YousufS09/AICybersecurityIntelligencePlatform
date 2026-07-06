@@ -139,6 +139,7 @@ Example request:
 - The backend is configured for local development with CORS allowed from `http://localhost:3000` and `http://127.0.0.1:3000`.
 - The model files are expected in `backend/model/phishing_bert/` unless `MODEL_SOURCE` points somewhere else.
 - The model artifact is large, so it is usually better to keep it outside the Git repo and point `MODEL_SOURCE` at a hub or storage location.
+- If the model checkpoint is unavailable at deploy time, the backend will now start with a lightweight heuristic fallback instead of crashing. Set `MODEL_SOURCE` to a valid Hugging Face repo id or local path if you want the full BERT model in production.
 - Groq powers the assistant-style chat responses when `GROQ_API_KEY` is set.
 - If the backend cannot find the model or a dependency is missing, check the Python environment and installed packages first.
 
